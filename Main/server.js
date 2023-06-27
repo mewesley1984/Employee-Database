@@ -1,19 +1,90 @@
-const express = require('express')
+import select from "@inquirer/select";
+import "console.table";
+import { db } from "./db/index.js";
 
-const mysql = require('mysql2');
+function userQuestions() {
+  select({
+    message: "What would you like to do?",
+    choices: [
+      {
+        name: "View All Employees",
+        value: "VIEW_EMPLOYEES",
+      },
+      {
+        name: "View All Roles",
+        value: "VIEW_ROLES",
+      },
+      {
+        name: "View All Departments",
+        value: "VIEW_DEPARTMENTS",
+      },
+      {
+        name: "Add Department",
+        value: "ADD_DEPT",
+      },
+      { name: "Add Employee", value: "ADD_EMP" },
+      { name: "Add Role", value: "ADD_ROLE" },
+      {
+        name: "Quit",
+        value: "QUIT",
+      },
+    ],
+  }).then((userResponse) => {
+    switch (userResponse) {
+      case "VIEW_EMPLOYEES":
+        viewEmployees();
+        break;
+      case "VIEW_ROLES":
+        viewRoles();
+        break;
+      case "VIEW_DEPARTMENTS":
+        viewDepartments();
+        break;
+      case "ADD_DEPT":
+        console.log("Not implemented");
+        break;
+      case "ADD_EMP":
+        console.log("Not implemented");
+        break;
+      case "ADD_ROLE":
+        console.log("Not implemented");
+        break;
+      default:
+        quit();
+    }
+  });
+}
 
-const PORT = proces.env.PORT || 3001;
-const app = express();
+userQuestions();
 
-app.use(express.urlencoded({extended: false}));
+function viewEmployees() {
+  db.findAllEmployees()
+    .then(([rows]) => {
+      let employees = rows;
+      console.table(employees);
+    })
+    .then(() => userQuestions());
+}
 
-app.use(express.json());
+function viewRoles() {
+  db.findAllRoles()
+    .then(([rows]) => {
+      let roles = rows;
+      console.table(roles);
+    })
+    .then(() => userQuestions());
+}
 
-const db = mysql.createConnection(
-   {
-    host: 'localhost',
-    user: 'root',
-    password: 'risa',
-    database: 'employee_db'
-   } 
-)
+function viewDepartments() {
+  db.findAllDepartments()
+    .then(([rows]) => {
+      let departments = rows;
+      console.table(departments);
+    })
+    .then(() => userQuestions());
+}
+
+function quit() {
+  console.log("See you later, alligator!");
+  process.exit(0);
+}
