@@ -34,6 +34,13 @@ class DB {
       from department
 `);
   }
+  viewBudget(dept_id) {
+    return this.connection.promise().query(`
+    select sum(salary) AS DepartmentBudgetcd
+      from role
+      where department_id = ${dept_id}
+`);
+  }
 
   // https://www.w3schools.com/sql/sql_insert.asp
   addEmployee(employee) {

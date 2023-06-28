@@ -19,6 +19,10 @@ function userQuestions() {
         name: "View All Departments",
         value: "VIEW_DEPARTMENTS",
       },
+      {
+        name: "View Department Budget",
+        value: "VIEW_BUDGET",
+      },
       { name: "Add Employee", value: "ADD_EMP" },
       { name: "Add Role", value: "ADD_ROLE" },
       {
@@ -44,6 +48,24 @@ function userQuestions() {
         break;
       case "VIEW_DEPARTMENTS":
         viewDepartments();
+        break;
+      case "VIEW_BUDGET":
+        db.findAllDepartments().then(([depts]) => {
+          select({
+            message: "Which department?",
+            // map db results into select objects =>> [{name: "Manager", value: 5}]
+            choices: depts.map((dept) => ({
+              name: dept.name,
+              value: dept.id,
+            })),
+          }).then((dept_id) => {
+            db.viewBudget(dept_id)
+              .then(([rows]) => {
+                console.table(rows);
+              })
+              .then(() => userQuestions());
+          });
+        });
         break;
       case "ADD_EMP":
         // first_name, last_name, role_id, manager_id
